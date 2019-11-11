@@ -1,16 +1,19 @@
 package cn.finalteam.rxgalleryfinal.sample;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.model.AspectRatio;
 
 import java.util.List;
@@ -119,7 +122,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 openVideoSelect();
                 break;
             case R.id.btn_open_crop:
-                openCrop();
+                final RxPermissions rxPermissions = new RxPermissions(this);
+                rxPermissions
+                        .request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                // I can control the camera now
+                                openCrop();
+                            } else {
+                                // Oups permission denied
+                            }
+                        });
+
                 break;
             case R.id.btn_open_set_path:
                 setPath();

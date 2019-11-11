@@ -3,12 +3,13 @@ package cn.finalteam.rxgalleryfinal.utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.media.ExifInterface;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
