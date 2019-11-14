@@ -46,7 +46,7 @@ public class GlideImageLoader implements AbsImageLoader {
                     .error(defaultDrawable)
                     .override(width, height)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(new RotateTransformation(context, rotate))
+                    .transform(new RotateTransformation(rotate))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(imageView);
         } else {
@@ -57,7 +57,7 @@ public class GlideImageLoader implements AbsImageLoader {
                     .placeholder(defaultDrawable)
                     .error(defaultDrawable)
                     .override(width, height)
-                    .transform(new RotateTransformation(context, rotate))
+                    .transform(new RotateTransformation(rotate))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(imageView);
         }
