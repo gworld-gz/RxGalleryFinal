@@ -10,24 +10,56 @@
         android:layout_height="match_parent"
         android:orientation="vertical" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#EF2B2C30"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/cb_check"
-            style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="2dp"
-            android:checked="true"
-            android:text="选中" />
-    </RelativeLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="#EF2B2C30" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.2dp"
+            android:background="#999" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_alignParentBottom="true"
+            android:background="#EF2B2C30"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/original_check"
+                style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:button="@drawable/check_select"
+                android:checked="false"
+                android:text=" 原图"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/cb_check"
+                style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="2dp"
+                android:button="@drawable/gallery_block_checkbox"
+                android:checked="true"
+                android:text=" 选中"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

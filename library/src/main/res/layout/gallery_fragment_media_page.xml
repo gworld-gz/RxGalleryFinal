@@ -12,7 +12,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="54dp"
         android:layout_alignParentBottom="true"
         android:background="#EF2B2C30"
         android:paddingLeft="15dp"
@@ -22,11 +22,12 @@
             android:id="@+id/cb_page_check"
             style="@style/Widget.AppCompat.CompoundButton.CheckBox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="2dp"
-            android:text="选中" />
+            android:button="@drawable/gallery_block_checkbox"
+            android:text=" 选中" />
     </RelativeLayout>
 
 </RelativeLayout>

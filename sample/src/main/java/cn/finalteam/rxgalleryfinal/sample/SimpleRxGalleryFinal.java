@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.yalantis.ucrop.UCrop;
 
@@ -131,7 +132,7 @@ public class SimpleRxGalleryFinal {
     public interface RxGalleryFinalCropListener {
 
         @NonNull
-        Activity getSimpleActivity();
+        AppCompatActivity getSimpleActivity();
 
 
         /**

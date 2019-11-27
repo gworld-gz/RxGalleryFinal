@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/previewLayout"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical"
+    android:padding="2dp">
+
+    <cn.finalteam.rxgalleryfinal.ui.widget.SquareImageView
+        android:id="@+id/imgView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop" />
+
+</cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout>

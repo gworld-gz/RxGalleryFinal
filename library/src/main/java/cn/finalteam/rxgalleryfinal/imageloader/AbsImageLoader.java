@@ -3,8 +3,7 @@ package cn.finalteam.rxgalleryfinal.imageloader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-
-import cn.finalteam.rxgalleryfinal.ui.widget.FixImageView;
+import android.widget.ImageView;
 
 /**
  * Desction:
@@ -14,7 +13,7 @@ import cn.finalteam.rxgalleryfinal.ui.widget.FixImageView;
 public interface AbsImageLoader {
     void displayImage(Context context,
                       String path,
-                      FixImageView imageView,
+                      ImageView imageView,
                       Drawable defaultDrawable,
                       Bitmap.Config config,
                       boolean resize,

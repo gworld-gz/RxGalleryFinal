@@ -16,10 +16,7 @@ import java.util.List;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.imageloader.AbsImageLoader;
-import cn.finalteam.rxgalleryfinal.imageloader.FrescoImageLoader;
 import cn.finalteam.rxgalleryfinal.imageloader.GlideImageLoader;
-import cn.finalteam.rxgalleryfinal.imageloader.PicassoImageLoader;
-import cn.finalteam.rxgalleryfinal.imageloader.UniversalImageLoader;
 
 /**
  * Desction:配置信息
@@ -185,23 +182,7 @@ public class Configuration implements Parcelable {
 
     public AbsImageLoader getImageLoader() {
         AbsImageLoader imageLoader = null;
-        switch (imageLoaderType) {
-            case 1:
-                imageLoader = new PicassoImageLoader();
-                break;
-            case 2:
-                imageLoader = new GlideImageLoader();
-                break;
-            case 3:
-                imageLoader = new FrescoImageLoader();
-                break;
-            case 4:
-                imageLoader = new UniversalImageLoader();
-                break;
-            case 5:
-
-                break;
-        }
+        imageLoader = new GlideImageLoader();
         return imageLoader;
     }
 

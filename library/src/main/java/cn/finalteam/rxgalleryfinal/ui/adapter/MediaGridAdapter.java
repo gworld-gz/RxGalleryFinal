@@ -16,15 +16,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
-
 import java.io.File;
 import java.util.List;
 
 import cn.finalteam.rxgalleryfinal.Configuration;
 import cn.finalteam.rxgalleryfinal.R;
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
-import cn.finalteam.rxgalleryfinal.imageloader.FrescoImageLoader;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBus;
 import cn.finalteam.rxgalleryfinal.rxbus.event.MediaCheckChangeEvent;
 import cn.finalteam.rxgalleryfinal.rxjob.Job;
@@ -32,11 +29,14 @@ import cn.finalteam.rxgalleryfinal.rxjob.RxJob;
 import cn.finalteam.rxgalleryfinal.rxjob.job.ImageThmbnailJobCreate;
 import cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity;
 import cn.finalteam.rxgalleryfinal.ui.base.IMultiImageCheckedListener;
+import cn.finalteam.rxgalleryfinal.ui.widget.CheckView;
 import cn.finalteam.rxgalleryfinal.ui.widget.FixImageView;
-import cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout;
+import cn.finalteam.rxgalleryfinal.utils.FormatUtils;
 import cn.finalteam.rxgalleryfinal.utils.Logger;
 import cn.finalteam.rxgalleryfinal.utils.OsCompat;
 import cn.finalteam.rxgalleryfinal.utils.ThemeUtils;
+
+import static cn.finalteam.rxgalleryfinal.ui.widget.CheckView.UNCHECKED;
 
 /**
  * Desction:
@@ -82,11 +82,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
     @Override
     public GridViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (imageLoaderType != 3) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_media_grid, parent, false);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_media_grid_fresco, parent, false);
-        }
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_media_grid, parent, false);
         return new GridViewHolder(view);
     }
 
@@ -95,25 +91,73 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
         MediaBean mediaBean = mMediaBeanList.get(position);
         if (mediaBean.getId() == Integer.MIN_VALUE) {
             holder.mCbCheck.setVisibility(View.GONE);
+            holder.tvDuration.setVisibility(View.GONE);
             holder.mIvMediaImage.setVisibility(View.GONE);
+            holder.checkView.setVisibility(View.GONE);
             holder.mLlCamera.setVisibility(View.VISIBLE);
             holder.mIvCameraImage.setImageDrawable(mCameraImage);
             holder.mTvCameraTxt.setTextColor(mCameraTextColor);
             holder.mTvCameraTxt.setText(mConfiguration.isImage() ? mMediaActivity.getString(R.string.gallery_take_image) : mMediaActivity.getString(R.string.gallery_video));
             holder.mIvCameraImage.setBackgroundColor(mCameraImageBgColor);
         } else {
+            holder.checkView.setCountable(!mConfiguration.isRadio());
             if (mConfiguration.isRadio()) {
                 holder.mCbCheck.setVisibility(View.GONE);
+                holder.checkView.setVisibility(View.GONE);
             } else {
-                holder.mCbCheck.setVisibility(View.VISIBLE);
-                holder.mCbCheck.setOnClickListener(new OnCheckBoxClickListener(mediaBean));
-                holder.mCbCheck.setOnCheckedChangeListener(new OnCheckBoxCheckListener(mediaBean));
+                holder.checkView.setVisibility(View.VISIBLE);
+                holder.mCbCheck.setVisibility(View.GONE);
+//                holder.mCbCheck.setOnClickListener(new OnCheckBoxClickListener(mediaBean));
+//                holder.mCbCheck.setOnCheckedChangeListener(new OnCheckBoxCheckListener(mediaBean));
             }
+            holder.checkView.bindMedia(mediaBean);
+
+            holder.tvDuration.setVisibility(mConfiguration.isImage() ? View.GONE : View.VISIBLE);
+            holder.tvDuration.setText(FormatUtils.formatDurationTime(mediaBean.getDuration()));
+            holder.ivGif.setVisibility(mConfiguration.isImage() && mediaBean.getOriginalPath().endsWith(".gif") ? View.VISIBLE : View.GONE);
+
             holder.mIvMediaImage.setVisibility(View.VISIBLE);
             holder.mLlCamera.setVisibility(View.GONE);
             holder.mCbCheck.setChecked(mMediaActivity.getCheckedList() != null && mMediaActivity.getCheckedList().contains(mediaBean));
+//            holder.checkView.setEnabled();
             String bitPath = mediaBean.getThumbnailBigPath();
             String smallPath = mediaBean.getThumbnailSmallPath();
+
+            if (mMediaActivity.getCheckedList() != null && mMediaActivity.getCheckedList().contains(mediaBean)) {
+                if (mConfiguration.isRadio()) {
+                    holder.checkView.setChecked(true);
+                } else {
+                    int num = mMediaActivity.getCheckedList().indexOf(mediaBean);
+                    holder.checkView.setCheckedNum(num + 1);
+                }
+            } else {
+                if (mConfiguration.isRadio()) {
+                    holder.checkView.setChecked(false);
+                } else {
+                    holder.checkView.setCheckedNum(UNCHECKED);
+                }
+            }
+
+            holder.checkView.setEnabled(mConfiguration.getMaxSize() > mMediaActivity.getCheckedList().size());
+
+            holder.checkView.bindMedia(mediaBean);
+            holder.checkView.setOnCheckClickListener(new CheckView.OnCheckClickListener() {
+                @Override
+                public void onCheckViewClicked(CheckView checkView, MediaBean item) {
+                    if (mConfiguration.getMaxSize() == mMediaActivity.getCheckedList().size() &&
+                            !mMediaActivity.getCheckedList().contains(mediaBean)) {
+                        Logger.i("=>" + mMediaActivity.getResources().getString(R.string.gallery_image_max_size_tip, mConfiguration.getMaxSize()));
+                        if (iMultiImageCheckedListener != null) {
+                            iMultiImageCheckedListener.selectedImgMax(checkView, false, mConfiguration.getMaxSize());
+                        }
+                    } else {
+                        RxBus.getDefault().post(new MediaCheckChangeEvent(mediaBean));
+                        if (iMultiImageCheckedListener != null)
+                            iMultiImageCheckedListener.selectedImg(checkView, !checkView.isChecked());
+                    }
+                    notifyDataSetChanged();
+                }
+            });
 
             if (!new File(bitPath).exists() || !new File(smallPath).exists()) {
                 Job job = new ImageThmbnailJobCreate(mMediaActivity, mediaBean).create();
@@ -132,16 +176,9 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
                 }
             }
             Logger.w("提示path：" + path);
-            if (imageLoaderType != 3) {
-                OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
-                mConfiguration.getImageLoader()
-                        .displayImage(mMediaActivity, path, (FixImageView) holder.mIvMediaImage, mDefaultImage, mConfiguration.getImageConfig(),
-                                true, mConfiguration.isPlayGif(), mImageSize, mImageSize, mediaBean.getOrientation());
-            } else {
-                OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
-                FrescoImageLoader.setImageSmall("file://" + path, (SimpleDraweeView) holder.mIvMediaImage,
-                        mImageSize, mImageSize, holder.relativeLayout, mConfiguration.isPlayGif());
-            }
+
+            OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
+            mConfiguration.getImageLoader().displayImage(mMediaActivity, path, (FixImageView) holder.mIvMediaImage, mDefaultImage, mConfiguration.getImageConfig(), true, mConfiguration.isPlayGif(), mImageSize, mImageSize, mediaBean.getOrientation());
         }
     }
 
@@ -157,18 +194,21 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
         final LinearLayout mLlCamera;
         final TextView mTvCameraTxt;
         final ImageView mIvCameraImage;
-        View mIvMediaImage;
-        SquareRelativeLayout relativeLayout;
+        ImageView mIvMediaImage, ivGif;
+        CheckView checkView;
+        TextView tvDuration;
 
 
         GridViewHolder(View itemView) {
             super(itemView);
             mIvMediaImage = itemView.findViewById(R.id.iv_media_image);
             mCbCheck = (AppCompatCheckBox) itemView.findViewById(R.id.cb_check);
-            relativeLayout = (SquareRelativeLayout) itemView.findViewById(R.id.rootView);
             mLlCamera = (LinearLayout) itemView.findViewById(R.id.ll_camera);
             mTvCameraTxt = (TextView) itemView.findViewById(R.id.tv_camera_txt);
             mIvCameraImage = (ImageView) itemView.findViewById(R.id.iv_camera_image);
+            checkView = itemView.findViewById(R.id.check_view);
+            tvDuration = itemView.findViewById(R.id.tv_duration);
+            ivGif = itemView.findViewById(R.id.iv_gif);
 
             int checkTint = ThemeUtils.resolveColor(itemView.getContext(), R.attr.gallery_checkbox_button_tint_color, R.color.gallery_default_checkbox_button_tint_color);
             CompoundButtonCompat.setButtonTintList(mCbCheck, ColorStateList.valueOf(checkTint));
@@ -220,7 +260,8 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
                 if (iMultiImageCheckedListener != null)
                     iMultiImageCheckedListener.selectedImg(buttonView, isChecked);
             }
-
         }
     }
+
+
 }

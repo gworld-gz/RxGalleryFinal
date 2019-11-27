@@ -29,7 +29,8 @@
     <View
         android:id="@+id/toolbar_divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp" />
+        android:layout_height="0.2dp"
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -38,4 +39,5 @@
         android:orientation="vertical">
 
     </FrameLayout>
+
 </LinearLayout>

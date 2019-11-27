@@ -38,27 +38,26 @@ public class ImageLoaderActivity extends AppCompatActivity {
         findViewById(R.id.btn_picasso).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(ImageLoaderType.PICASSO);
+                start(ImageLoaderType.GLIDE);
             }
         });
         findViewById(R.id.btn_fresco).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(ImageLoaderType.FRESCO);
+                start(ImageLoaderType.GLIDE);
             }
         });
         findViewById(R.id.btn_universal).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                start(ImageLoaderType.UNIVERSAL);
+                start(ImageLoaderType.GLIDE);
             }
         });
     }
 
     private void start(ImageLoaderType imageLoaderType) {
         switch (imageLoaderType) {
-            case PICASSO:
-            case UNIVERSAL:
+            case GLIDE:
                 Toast.makeText(getApplicationContext(), imageLoaderType + "不支持Gif", Toast.LENGTH_SHORT).show();
                 break;
         }

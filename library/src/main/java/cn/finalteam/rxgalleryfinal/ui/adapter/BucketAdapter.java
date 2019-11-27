@@ -1,6 +1,5 @@
 package cn.finalteam.rxgalleryfinal.ui.adapter;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,12 +11,12 @@ import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.appcompat.widget.AppCompatRadioButton;
-import androidx.core.widget.CompoundButtonCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -61,7 +60,7 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
         BucketBean bucketBean = mBucketList.get(position);
         String bucketName = bucketBean.getBucketName();
         if (position != 0) {
-            SpannableString nameSpannable = new SpannableString(bucketName + "\n" + bucketBean.getImageCount() + "张");
+            SpannableString nameSpannable = new SpannableString(bucketName + "（" + bucketBean.getImageCount() + "）");
             nameSpannable.setSpan(new ForegroundColorSpan(Color.GRAY), bucketName.length(), nameSpannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             nameSpannable.setSpan(new RelativeSizeSpan(0.8f), bucketName.length(), nameSpannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             holder.mTvBucketName.setText(nameSpannable);
@@ -70,7 +69,6 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
         }
         if (mSelectedBucket != null && TextUtils.equals(mSelectedBucket.getBucketId(), bucketBean.getBucketId())) {
             holder.mRbSelected.setVisibility(View.VISIBLE);
-            holder.mRbSelected.setChecked(true);
         } else {
             holder.mRbSelected.setVisibility(View.GONE);
         }
@@ -103,7 +101,7 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
 
         final TextView mTvBucketName;
         final SquareImageView mIvBucketCover;
-        final AppCompatRadioButton mRbSelected;
+        final ImageView mRbSelected;
 
         private final ViewGroup mParentView;
 
@@ -112,12 +110,17 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
             this.mParentView = parent;
             mTvBucketName = (TextView) itemView.findViewById(R.id.tv_bucket_name);
             mIvBucketCover = (SquareImageView) itemView.findViewById(R.id.iv_bucket_cover);
-            mRbSelected = (AppCompatRadioButton) itemView.findViewById(R.id.rb_selected);
+            mRbSelected = (ImageView) itemView.findViewById(R.id.rb_selected);
 
             itemView.setOnClickListener(this);
 
             int checkTint = ThemeUtils.resolveColor(itemView.getContext(), R.attr.gallery_checkbox_button_tint_color, R.color.gallery_default_checkbox_button_tint_color);
-            CompoundButtonCompat.setButtonTintList(mRbSelected, ColorStateList.valueOf(checkTint));
+            Drawable drawable = ContextCompat.getDrawable(parent.getContext(), R.drawable.gallery_ic_select);
+            Drawable.ConstantState state = drawable.getConstantState();
+            Drawable drawable1 = DrawableCompat.wrap(state == null ? drawable : state.newDrawable()).mutate();
+            drawable1.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            DrawableCompat.setTint(drawable, checkTint);
+            mRbSelected.setImageDrawable(drawable);
         }
 
         @Override
@@ -128,7 +131,6 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
 
             setRadioDisChecked(mParentView);
             mRbSelected.setVisibility(View.VISIBLE);
-            mRbSelected.setChecked(true);
         }
 
         /**
@@ -141,10 +143,9 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
 
             for (int i = 0; i < parentView.getChildCount(); i++) {
                 View itemView = parentView.getChildAt(i);
-                RadioButton rbSelect = (RadioButton) itemView.findViewById(R.id.rb_selected);
+                ImageView rbSelect = (ImageView) itemView.findViewById(R.id.rb_selected);
                 if (rbSelect != null) {
                     rbSelect.setVisibility(View.GONE);
-                    rbSelect.setChecked(false);
                 }
             }
         }

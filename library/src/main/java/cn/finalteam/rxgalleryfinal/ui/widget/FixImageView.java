@@ -7,14 +7,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
+
+import pl.droidsonroids.gif.GifImageView;
 
 /**
  * Desction:为了兼容fresco框架而自定义的ImageView
  * Author:pengjianbo  Dujinyang
  * Date:2015/12/24 0024 20:14
  */
-public class FixImageView extends AppCompatImageView {
+public class FixImageView extends GifImageView {
 
     private OnImageViewListener mOnImageViewListener;
 

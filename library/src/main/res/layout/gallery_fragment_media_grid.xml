@@ -14,7 +14,7 @@
     <RelativeLayout
         android:id="@+id/rl_bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="54dp"
         android:layout_alignParentBottom="true"
         android:background="#EF2B2C30"
         android:clickable="true"
@@ -23,14 +23,15 @@
         <TextView
             android:id="@+id/tv_folder_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:drawablePadding="3dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/gallery_type_bg"
             android:drawableRight="@drawable/gallery_ic_corner_selector"
+            android:drawablePadding="3dp"
             android:gravity="center_vertical"
-            android:paddingBottom="12dp"
-            android:paddingLeft="15dp"
-            android:paddingTop="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="@string/gallery_all_image"
             android:textColor="@color/gallery_text_color_selector"
             android:textSize="14sp" />
@@ -44,10 +45,10 @@
             android:layout_centerVertical="true"
             android:clickable="false"
             android:gravity="center_vertical"
-            android:paddingBottom="12dp"
             android:paddingLeft="15dp"
-            android:paddingRight="15dp"
             android:paddingTop="12dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="12dp"
             android:text="@string/gallery_preview_title"
             android:textColor="@color/gallery_text_color_selector"
             android:textSize="14sp" />
@@ -69,8 +70,7 @@
         android:layout_above="@id/rl_bottom_bar"
         android:background="@color/gallery_media_grid_block_color"
         android:clickable="true"
-        android:paddingTop="?actionBarSize"
-        android:visibility="gone">
+        android:paddingTop="?actionBarSize">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_bucket"
@@ -83,6 +83,7 @@
         android:id="@+id/ll_empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:alpha="0.9"
         android:gravity="center"
         android:orientation="vertical">
 

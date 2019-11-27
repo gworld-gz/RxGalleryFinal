@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -48,7 +47,7 @@ public class MediaPageFragment extends BaseFragment implements ViewPager.OnPageC
     private ViewPager mViewPager;
     private MediaPreviewAdapter mMediaPreviewAdapter;
     private ArrayList<MediaBean> mMediaBeanList;
-    private RelativeLayout mRlRootView;
+    private View mRlRootView;
 
     private MediaActivity mMediaActivity;
     private int mItemClickPosition;
@@ -80,7 +79,7 @@ public class MediaPageFragment extends BaseFragment implements ViewPager.OnPageC
     public void onViewCreatedOk(View view, @Nullable Bundle savedInstanceState) {
         mCbCheck = (AppCompatCheckBox) view.findViewById(R.id.cb_page_check);
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager_page);
-        mRlRootView = (RelativeLayout) view.findViewById(R.id.rl_page_root_view);
+        mRlRootView = view.findViewById(R.id.rl_page_root_view);
         mScreenSize = DeviceUtils.getScreenSize(getContext());
 
         mMediaBeanList = new ArrayList<>();

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:ignore="ResourceName">
 
     <cn.finalteam.rxgalleryfinal.ui.widget.SquareLinearLayout
         android:id="@+id/ll_camera"
@@ -35,8 +37,41 @@
         style="@style/Widget.AppCompat.CompoundButton.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:layout_margin="2dp" />
+
+    <cn.finalteam.rxgalleryfinal.ui.widget.CheckView
+        android:id="@+id/check_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="2dp" />
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tv_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:drawableLeft="@drawable/gallery_ic_video"
+        android:drawablePadding="4dp"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="22:00"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_gif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_gif"
+        android:visibility="gone" />
+
 </cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout>

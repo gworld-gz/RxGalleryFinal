@@ -1,7 +1,6 @@
 package cn.finalteam.rxgalleryfinal.sample;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +11,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.model.AspectRatio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
@@ -25,7 +27,6 @@ import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
-import cn.finalteam.rxgalleryfinal.sample.imageloader.ImageLoaderActivity;
 import cn.finalteam.rxgalleryfinal.ui.RxGalleryListener;
 import cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity;
 import cn.finalteam.rxgalleryfinal.ui.base.IMultiImageCheckedListener;
@@ -49,18 +50,21 @@ import cn.finalteam.rxgalleryfinal.utils.PermissionCheckUtils;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     RadioButton mRbRadioIMG, mRbMutiIMG, mRbOpenC, mRbRadioVD, mRbMutiVD, mRbCropZD, mRbCropZVD;
+    RecyclerView recyclerView;
+    ImageAdapter imageAdapter;
+    ArrayList<MediaBean> mediaBeans = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn_image_loader).setOnClickListener(this);
         findViewById(R.id.btn_open_def_radio).setOnClickListener(this);
         findViewById(R.id.btn_open_def_multi).setOnClickListener(this);
         findViewById(R.id.btn_open_img).setOnClickListener(this);
         findViewById(R.id.btn_open_vd).setOnClickListener(this);
         findViewById(R.id.btn_open_crop).setOnClickListener(this);
         findViewById(R.id.btn_open_set_path).setOnClickListener(this);
+        recyclerView = findViewById(R.id.recyclerView);
         mRbRadioIMG = (RadioButton) findViewById(R.id.rb_radio_img);
         mRbMutiIMG = (RadioButton) findViewById(R.id.rb_muti_img);
         mRbRadioVD = (RadioButton) findViewById(R.id.rb_radio_vd);
@@ -68,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRbOpenC = (RadioButton) findViewById(R.id.rb_openC);
         mRbCropZD = (RadioButton) findViewById(R.id.rb_radio_crop_z);
         mRbCropZVD = (RadioButton) findViewById(R.id.rb_radio_crop_vz);
+
+        imageAdapter = new ImageAdapter(this, mediaBeans);
+        recyclerView.setAdapter(imageAdapter);
+        GridLayoutManager manager = new GridLayoutManager(this, 3);
+        recyclerView.setLayoutManager(manager);
+
         //多选事件的回调
         RxGalleryListener
                 .getInstance()
@@ -104,11 +114,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_image_loader:
-                Intent intent = new Intent(v.getContext(), ImageLoaderActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
             case R.id.btn_open_def_radio:
                 openRadio();
                 break;
@@ -166,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     new SimpleRxGalleryFinal.RxGalleryFinalCropListener() {
                         @NonNull
                         @Override
-                        public Activity getSimpleActivity() {
+                        public AppCompatActivity getSimpleActivity() {
                             return MainActivity.this;
                         }
 
@@ -233,12 +238,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .selected(list);
         }
         rxGalleryFinal.maxSize(8)
-                .imageLoader(ImageLoaderType.FRESCO)
+                .imageLoader(ImageLoaderType.GLIDE)
                 .subscribe(new RxBusResultDisposable<ImageMultipleResultEvent>() {
 
                     @Override
                     protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
                         list = imageMultipleResultEvent.getResult();
+                        listNotify(list);
                         Toast.makeText(getBaseContext(), "已选择" + imageMultipleResultEvent.getResult().size() + "张图片", Toast.LENGTH_SHORT).show();
                     }
 
@@ -249,6 +255,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 })
                 .openGallery();
+
+    }
+
+    public void listNotify(List<MediaBean> list) {
+        mediaBeans.clear();
+        mediaBeans.addAll(list);
+        imageAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * OPEN 图片多选实现方法
+     * <p>
+     * 默认使用 第三个 ，如果运行sample,可自行改变Type，运行Demo查看效果
+     */
+    private void openImageSelectMultiMethod(int type) {
+        switch (type) {
+            case 0:
+
+                //使用默认的参数
+                RxGalleryFinalApi
+                        .getInstance(MainActivity.this)
+                        .setImageMultipleResultEvent(
+                                new RxBusResultDisposable<ImageMultipleResultEvent>() {
+                                    @Override
+                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                                        Logger.i("多选图片的回调");
+                                    }
+                                }).open();
+
+                break;
+            case 1:
+
+                //使用自定义的参数
+                RxGalleryFinalApi
+                        .getInstance(MainActivity.this)
+                        .setType(RxGalleryFinalApi.SelectRXType.TYPE_IMAGE, RxGalleryFinalApi.SelectRXType.TYPE_SELECT_MULTI)
+                        .setImageMultipleResultEvent(new RxBusResultDisposable<ImageMultipleResultEvent>() {
+                            @Override
+                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                                Logger.i("多选图片的回调");
+                            }
+                        }).open();
+
+                break;
+            case 2:
+
+                //直接打开
+                RxGalleryFinalApi.openMultiSelectImage(this, new RxBusResultDisposable<ImageMultipleResultEvent>() {
+                    @Override
+                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                        Logger.i("多选图片的回调");
+                    }
+                });
+
+                break;
+        }
+
     }
 
     /**
@@ -261,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .radio()
                 .cropAspectRatioOptions(0, new AspectRatio("3:3", 30, 10))
                 .crop()
-                .imageLoader(ImageLoaderType.FRESCO)
+                .imageLoader(ImageLoaderType.GLIDE)
                 .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                     @Override
                     protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
@@ -336,55 +399,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .open();
     }
 
-    /**
-     * OPEN 图片多选实现方法
-     * <p>
-     * 默认使用 第三个 ，如果运行sample,可自行改变Type，运行Demo查看效果
-     */
-    private void openImageSelectMultiMethod(int type) {
-        switch (type) {
-            case 0:
-
-                //使用默认的参数
-                RxGalleryFinalApi
-                        .getInstance(MainActivity.this)
-                        .setImageMultipleResultEvent(
-                                new RxBusResultDisposable<ImageMultipleResultEvent>() {
-                                    @Override
-                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
-                                        Logger.i("多选图片的回调");
-                                    }
-                                }).open();
-
-                break;
-            case 1:
-
-                //使用自定义的参数
-                RxGalleryFinalApi
-                        .getInstance(MainActivity.this)
-                        .setType(RxGalleryFinalApi.SelectRXType.TYPE_IMAGE, RxGalleryFinalApi.SelectRXType.TYPE_SELECT_MULTI)
-                        .setImageMultipleResultEvent(new RxBusResultDisposable<ImageMultipleResultEvent>() {
-                            @Override
-                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
-                                Logger.i("多选图片的回调");
-                            }
-                        }).open();
-
-                break;
-            case 2:
-
-                //直接打开
-                RxGalleryFinalApi.openMultiSelectImage(this, new RxBusResultDisposable<ImageMultipleResultEvent>() {
-                    @Override
-                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
-                        Logger.i("多选图片的回调");
-                    }
-                });
-
-                break;
-        }
-
-    }
 
     /**
      * OPEN 图片单选实现方法

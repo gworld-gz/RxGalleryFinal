@@ -105,6 +105,7 @@ public class MediaUtils {
         projection.add(MediaStore.Video.Media.DATE_MODIFIED);
         projection.add(MediaStore.Video.Media.LATITUDE);
         projection.add(MediaStore.Video.Media.LONGITUDE);
+        projection.add(MediaStore.Video.Media.DURATION);
         projection.add(MediaStore.Video.Media.SIZE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             projection.add(MediaStore.Video.Media.WIDTH);
@@ -126,7 +127,9 @@ public class MediaUtils {
                 cursor.moveToFirst();
                 do {
                     MediaBean mediaBean = parseVideoCursorAndCreateThumImage(context, cursor);
-                    mediaBeanList.add(mediaBean);
+                    if (mediaBean.getDuration() > 0) {
+                        mediaBeanList.add(mediaBean);
+                    }
                 } while (cursor.moveToNext());
             }
         }
@@ -220,9 +223,12 @@ public class MediaUtils {
      */
     @Nullable
     private static MediaBean parseImageCursorAndCreateThumImage(Context context, Cursor cursor) {
-        long size = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
+        long size = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
+
         String originalPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-        if (TextUtils.isEmpty(originalPath) || size <= 0 || !new File(originalPath).exists()) {
+        if (TextUtils.isEmpty(originalPath) ||
+                size < 0 ||
+                !new File(originalPath).exists()) {
             return null;
         }
 
@@ -277,6 +283,7 @@ public class MediaUtils {
      */
     private static MediaBean parseVideoCursorAndCreateThumImage(Context context, Cursor cursor) {
         MediaBean mediaBean = new MediaBean();
+
         long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID));
         mediaBean.setId(id);
         String title = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE));
@@ -295,6 +302,8 @@ public class MediaUtils {
         mediaBean.setModifiedDate(modifiedDate);
         long length = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE));
         mediaBean.setLength(length);
+        long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+        mediaBean.setDuration(duration);
 
         //创建缩略图文件
         mediaBean.setThumbnailBigPath(createThumbnailBigFileName(context, originalPath).getAbsolutePath());
@@ -358,6 +367,7 @@ public class MediaUtils {
             projection = new String[]{
                     MediaStore.Images.Media.BUCKET_ID,
                     MediaStore.Images.Media.DATA,
+                    MediaStore.Images.Media.SIZE,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.ORIENTATION,
             };
@@ -365,6 +375,7 @@ public class MediaUtils {
             projection = new String[]{
                     MediaStore.Video.Media.BUCKET_ID,
                     MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
             };
         }
@@ -393,6 +404,7 @@ public class MediaUtils {
                 String bucketId;
                 String bucketKey;
                 String cover;
+                String selection = null;
                 if (isImage) {
                     bucketId = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID));
                     bucketBean.setBucketId(bucketId);
@@ -402,6 +414,7 @@ public class MediaUtils {
                     cover = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                     int orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
                     bucketBean.setOrientation(orientation);
+                    selection = bucketKey + "=?";
                 } else {
                     bucketId = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID));
                     bucketBean.setBucketId(bucketId);
@@ -409,6 +422,7 @@ public class MediaUtils {
                     bucketBean.setBucketName(bucketDisplayName);
                     bucketKey = MediaStore.Video.Media.BUCKET_ID;
                     cover = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+                    selection = bucketKey + "=?" + " AND " + MediaStore.Video.Media.DURATION + ">0";
                 }
                 if (TextUtils.isEmpty(allMediaBucket.getCover())) {
                     allMediaBucket.setCover(cover);
@@ -416,8 +430,10 @@ public class MediaUtils {
                 if (bucketBeenList.contains(bucketBean)) {
                     continue;
                 }
+
                 //获取数量
-                Cursor c = contentResolver.query(uri, projection, bucketKey + "=?", new String[]{bucketId}, null);
+                Cursor c = contentResolver.query(uri, projection, selection, new String[]{bucketId}, null);
+
                 if (c != null && c.getCount() > 0) {
                     bucketBean.setImageCount(c.getCount());
                 }
@@ -425,7 +441,10 @@ public class MediaUtils {
                 if (c != null && !c.isClosed()) {
                     c.close();
                 }
-                bucketBeenList.add(bucketBean);
+                if ((!isImage && bucketBean.getImageCount() > 0) || isImage) {
+                    bucketBeenList.add(bucketBean);
+                }
+
             } while (cursor.moveToNext());
         }
 
@@ -434,4 +453,6 @@ public class MediaUtils {
         }
         return bucketBeenList;
     }
+
+
 }

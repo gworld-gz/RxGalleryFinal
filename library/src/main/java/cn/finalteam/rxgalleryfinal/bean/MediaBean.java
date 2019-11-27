@@ -53,6 +53,8 @@ public class MediaBean implements Parcelable {
     private String thumbnailBigPath;
     //小缩略图
     private String thumbnailSmallPath;
+    //视频时间
+    private long duration;
 
     public MediaBean() {
     }
@@ -74,6 +76,7 @@ public class MediaBean implements Parcelable {
         longitude = in.readDouble();
         orientation = in.readInt();
         length = in.readLong();
+        duration = in.readLong();
     }
 
     @Override
@@ -94,6 +97,11 @@ public class MediaBean implements Parcelable {
         dest.writeDouble(longitude);
         dest.writeInt(orientation);
         dest.writeLong(length);
+        dest.writeLong(duration);
+    }
+
+    public boolean isGif() {
+        return originalPath != null && originalPath.endsWith(".gif");
     }
 
     @Override
@@ -246,6 +254,7 @@ public class MediaBean implements Parcelable {
 
     }
 
+
     @Override
     public String toString() {
         return "MediaBean{" +
@@ -266,5 +275,13 @@ public class MediaBean implements Parcelable {
                 ", thumbnailBigPath='" + thumbnailBigPath + '\'' +
                 ", thumbnailSmallPath='" + thumbnailSmallPath + '\'' +
                 '}';
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 }

@@ -285,6 +285,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         mScreenSize = DeviceUtils.getScreenSize(getContext());
         mMediaGridAdapter = new MediaGridAdapter(mMediaActivity, mMediaBeanList, mScreenSize.widthPixels, mConfiguration);
         mRvMedia.setAdapter(mMediaGridAdapter);
+
         mMediaGridPresenter = new MediaGridPresenterImpl(getContext(), mConfiguration.isImage());
         mMediaGridPresenter.setMediaGridView(this);
 
@@ -293,8 +294,6 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         mRvBucket.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext())
                 .color(getResources().getColor(R.color.gallery_bucket_list_decoration_color))
                 .size(getResources().getDimensionPixelSize(R.dimen.gallery_divider_decoration_height))
-                .margin(getResources().getDimensionPixelSize(R.dimen.gallery_bucket_margin),
-                        getResources().getDimensionPixelSize(R.dimen.gallery_bucket_margin))
                 .build());
         mRvBucket.setLayoutManager(linearLayoutManager);
         mBucketBeanList = new ArrayList<>();
@@ -470,9 +469,9 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
 
     @Override
     public void onItemClick(View view, int position) {
+        hideRvBucketView();
         BucketBean bucketBean = mBucketBeanList.get(position);
         String bucketId = bucketBean.getBucketId();
-        mRlBucektOverview.setVisibility(View.GONE);
         if (TextUtils.equals(mBucketId, bucketId)) {
             return;
         }

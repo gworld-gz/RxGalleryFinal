@@ -245,7 +245,7 @@ public class RxGalleryFinalApi {
                 .video()
                 .multiple()
                 .maxSize(9)
-                .imageLoader(ImageLoaderType.UNIVERSAL)
+                .imageLoader(ImageLoaderType.GLIDE)
                 .subscribe(rxBusResultDisposable)
                 .openGallery();
     }
