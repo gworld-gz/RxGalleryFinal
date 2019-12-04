@@ -249,8 +249,12 @@ public class MediaUtils {
         mediaBean.setMimeType(mimeType);
         mediaBean.setCreateDate(createDate);
         mediaBean.setModifiedDate(modifiedDate);
-        mediaBean.setThumbnailBigPath(createThumbnailBigFileName(context, originalPath).getAbsolutePath());
-        mediaBean.setThumbnailSmallPath(createThumbnailSmallFileName(context, originalPath).getAbsolutePath());
+
+//        //创建缩略图文件, 图片就不自己生成缩略图了，太耗等待时间，建议用直接图片加载工具加载，实在需要可以自己调用方法获取
+//        String thumbPath = getThumbnail(context, id, MediaStore.Images.Thumbnails.MICRO_KIND, true);
+//        mediaBean.setThumbnailBigPath(thumbPath);
+//        mediaBean.setThumbnailSmallPath(thumbPath);
+
         int width = 0, height = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             width = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.WIDTH));
@@ -306,8 +310,9 @@ public class MediaUtils {
         mediaBean.setDuration(duration);
 
         //创建缩略图文件
-        mediaBean.setThumbnailBigPath(createThumbnailBigFileName(context, originalPath).getAbsolutePath());
-        mediaBean.setThumbnailSmallPath(createThumbnailSmallFileName(context, originalPath).getAbsolutePath());
+        String thumbPath = getThumbnail(context, id, MediaStore.Video.Thumbnails.MICRO_KIND, false);
+        mediaBean.setThumbnailBigPath(thumbPath);
+        mediaBean.setThumbnailSmallPath(thumbPath);
 
         int width = 0, height = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -330,6 +335,62 @@ public class MediaUtils {
         double longitude = cursor.getDouble(cursor.getColumnIndex(MediaStore.Video.Media.LONGITUDE));
         mediaBean.setLongitude(longitude);
         return mediaBean;
+    }
+
+    /**
+     * Call this method when you real need, it sure take many time.
+     *
+     * @param context context
+     * @param sourceId target's id in the table.
+     * @param kind {@link android.provider.MediaStore.Video.Thumbnails#MICRO_KIND},
+     *             {@link android.provider.MediaStore.Video.Thumbnails#MINI_KIND},
+     *             {@link android.provider.MediaStore.Video.Thumbnails#FULL_SCREEN_KIND}
+     * @param isImage image or video
+     * @return the file path of the thumb.
+     */
+    public static String getThumbnail(Context context, long sourceId, int kind, boolean isImage) {
+        //提前生成缩略图，再获取：http://stackoverflow.com/questions/27903264/how-to-get-the-video-thumbnail-path-and-not-the-bitmap
+//        MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(), videoId, MediaStore.Video.Thumbnails.MINI_KIND, null);
+        Uri queryUri;
+        String[] projection;
+        String selection;
+
+        if (isImage) {
+            MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), sourceId, kind, null);
+
+            queryUri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI;
+            projection = new String[]{MediaStore.Images.Thumbnails._ID, MediaStore.Images.Thumbnails.DATA};
+            selection = MediaStore.Images.Thumbnails.IMAGE_ID + "=?";
+        } else {
+            MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(), sourceId, kind, null);
+
+            queryUri = MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI;
+            projection = new String[]{MediaStore.Video.Thumbnails._ID, MediaStore.Video.Thumbnails.DATA};
+            selection = MediaStore.Video.Thumbnails.VIDEO_ID + "=?";
+        }
+
+        Cursor cursor = context.getContentResolver().query(
+                queryUri,
+                projection,
+                selection,
+                new String[]{String.valueOf(sourceId)},
+                null
+        );
+
+        String thumbPath = "";
+
+        if (cursor == null) {
+            return thumbPath;
+        }
+
+        while (cursor.moveToNext()) {
+            thumbPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+        }
+
+        if (!cursor.isClosed()) {
+            cursor.close();
+        }
+        return thumbPath;
     }
 
     public static File createThumbnailBigFileName(Context context, String originalPath) {
