@@ -50,9 +50,9 @@ public class MediaBean implements Parcelable {
     private String bucketId;
     private String bucketDisplayName;
     //大缩略图
-    private String thumbnailBigPath;
+    private String thumbnailBigPath = "";
     //小缩略图
-    private String thumbnailSmallPath;
+    private String thumbnailSmallPath = "";
     //视频时间
     private long duration;
 
