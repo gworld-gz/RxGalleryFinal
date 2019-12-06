@@ -1,5 +1,5 @@
 # RxGalleryFinal
-
+[![](https://jitpack.io/v/gworld-gz/RxGalleryFinal.svg)](https://jitpack.io/#gworld-gz/RxGalleryFinal)
 
 ## 功能描述（JDK1.8）
 
