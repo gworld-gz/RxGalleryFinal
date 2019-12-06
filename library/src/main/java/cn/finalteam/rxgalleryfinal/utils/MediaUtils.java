@@ -359,7 +359,10 @@ public class MediaUtils {
             MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), sourceId, kind, null);
 
             queryUri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI;
-            projection = new String[]{MediaStore.Images.Thumbnails._ID, MediaStore.Images.Thumbnails.DATA};
+            projection = new String[]{
+                    MediaStore.Images.Thumbnails._ID,
+                    MediaStore.Images.Thumbnails.DATA,
+            };
             selection = MediaStore.Images.Thumbnails.IMAGE_ID + "=?";
         } else {
             MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(), sourceId, kind, null);

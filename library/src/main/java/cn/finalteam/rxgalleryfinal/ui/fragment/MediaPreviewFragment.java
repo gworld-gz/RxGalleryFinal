@@ -3,10 +3,12 @@ package cn.finalteam.rxgalleryfinal.ui.fragment;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -31,6 +33,7 @@ import cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity;
 import cn.finalteam.rxgalleryfinal.ui.adapter.MediaPreviewAdapter;
 import cn.finalteam.rxgalleryfinal.ui.adapter.PreviewAdapter;
 import cn.finalteam.rxgalleryfinal.utils.DeviceUtils;
+import cn.finalteam.rxgalleryfinal.utils.FileSizeUtil;
 import cn.finalteam.rxgalleryfinal.utils.ThemeUtils;
 
 /**
@@ -49,11 +52,13 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
     private ViewPager mViewPager;
     private List<MediaBean> mMediaBeanList;
     private RelativeLayout mRlRootView;
+    private TextView tvSize;
     private RecyclerView previewRecycler;
 
     private MediaActivity mMediaActivity;
     private int mPagerPosition;
     private PreviewAdapter previewAdapter;
+    private boolean original;//是否为原图
 
     public static MediaPreviewFragment newInstance(Configuration configuration, int position) {
         MediaPreviewFragment fragment = new MediaPreviewFragment();
@@ -85,14 +90,17 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
         mRlRootView = (RelativeLayout) view.findViewById(R.id.rl_root_view);
         previewRecycler = view.findViewById(R.id.recyclerView);
+        tvSize = view.findViewById(R.id.tv_size);
 
         boxOriginal.setVisibility(mConfiguration.isImage() ? View.VISIBLE : View.GONE);
+        tvSize.setVisibility(mConfiguration.isImage() ? View.VISIBLE : View.GONE);
 
         mScreenSize = DeviceUtils.getScreenSize(getContext());
         mMediaBeanList = new ArrayList<>();
         if (mMediaActivity.getCheckedList() != null) {
             mMediaBeanList.addAll(mMediaActivity.getCheckedList());
         }
+
         MediaPreviewAdapter mMediaPreviewAdapter = new MediaPreviewAdapter(mMediaBeanList,
                 mScreenSize.widthPixels, mScreenSize.heightPixels, mConfiguration,
                 ThemeUtils.resolveColor(getActivity(), R.attr.gallery_page_bg, R.color.gallery_default_page_bg),
@@ -107,6 +115,7 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
             @Override
             public void onPageSelected(int position) {
                 previewAdapter.setCheck(mMediaBeanList.get(position));
+                tvSize.setText("(" + Formatter.formatFileSize(getContext(), getImageSize(mMediaBeanList.get(position))) + ")");
             }
 
             @Override
@@ -118,8 +127,7 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
         boxOriginal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mMediaPreviewAdapter.setOriginal(isChecked);
-                mMediaPreviewAdapter.notifyDataSetChanged();
+                original = isChecked;
             }
         });
 
@@ -134,7 +142,10 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
                 mViewPager.setCurrentItem(position);
             }
         });
-
+        if (mMediaBeanList != null && mMediaBeanList.size() > 0) {
+            previewAdapter.setCheck(mMediaBeanList.get(0));
+            tvSize.setText("(" + Formatter.formatFileSize(getContext(), getImageSize(mMediaBeanList.get(0))) + ")");
+        }
         if (savedInstanceState != null) {
             mPagerPosition = savedInstanceState.getInt(EXTRA_PAGE_INDEX);
         }
@@ -158,6 +169,7 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
         int cbTextColor = ThemeUtils.resolveColor(getContext(), R.attr.gallery_checkbox_text_color, R.color.gallery_default_checkbox_text_color);
         mCbCheck.setTextColor(cbTextColor);
         boxOriginal.setTextColor(cbTextColor);
+        tvSize.setTextColor(cbTextColor);
 
         int pageColor = ThemeUtils.resolveColor(getContext(), R.attr.gallery_page_bg, R.color.gallery_default_page_bg);
         mRlRootView.setBackgroundColor(pageColor);
@@ -180,6 +192,13 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
         if (outState != null) {
             outState.putInt(EXTRA_PAGE_INDEX, mPagerPosition);
         }
+    }
+
+    private long getImageSize(MediaBean mediaBean) {
+        if (mediaBean.getLength() > 0) {
+            return mediaBean.getLength();
+        }
+        return FileSizeUtil.getAutoFileOrFilesSize(mediaBean.getOriginalPath());
     }
 
     @Override
@@ -225,5 +244,13 @@ public class MediaPreviewFragment extends BaseFragment implements ViewPager.OnPa
         super.onDestroyView();
         mPagerPosition = 0;
         RxBus.getDefault().post(new CloseMediaViewPageFragmentEvent());
+    }
+
+    public boolean isOriginal() {
+        return original;
+    }
+
+    public void setOriginal(boolean original) {
+        this.original = original;
     }
 }

@@ -90,6 +90,9 @@ public class MediaActivity extends BaseActivity implements ActivityFragmentView 
                     mMediaGridFragment.hideRvBucketView();
                 } else {
                     if (mCheckedList != null && mCheckedList.size() > 0) {
+                        for (MediaBean mediaBean : mCheckedList) {
+                            mediaBean.setOriginal(mMediaPreviewFragment.isOriginal());
+                        }
                         BaseResultEvent event = new ImageMultipleResultEvent(mCheckedList);
                         RxBus.getDefault().post(event);
                         finish();

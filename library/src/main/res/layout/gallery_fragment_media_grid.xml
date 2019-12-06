@@ -9,6 +9,7 @@
         android:id="@+id/rv_media"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/rl_bottom_bar"
         android:cacheColorHint="#00000000" />
 
     <RelativeLayout
@@ -16,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_alignParentBottom="true"
-        android:background="#EF2B2C30"
+        android:background="#2B2C30"
         android:clickable="true"
         android:gravity="center_vertical">
 
@@ -63,21 +64,29 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/rl_bucket_overview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/rl_bottom_bar"
-        android:background="@color/gallery_media_grid_block_color"
+        android:background="#96000000"
         android:clickable="true"
-        android:paddingTop="?actionBarSize">
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/btn_close"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_bucket"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/gallery_bucket_list_item_normal_color" />
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/gallery_bucket_list_item_normal_color"
+            android:overScrollMode="never"
+            android:paddingBottom="54dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_empty_view"

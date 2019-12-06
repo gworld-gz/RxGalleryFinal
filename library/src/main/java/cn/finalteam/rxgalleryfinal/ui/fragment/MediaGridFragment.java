@@ -104,7 +104,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
     private final int CROP_IMAGE_REQUEST_CODE = 1011;
     private final String TAKE_URL_STORAGE_KEY = "take_url_storage_key";
     private final String BUCKET_ID_KEY = "bucket_id_key";
-    private final int LIMIT = 23;
+    private final int LIMIT = 54;
     MediaGridPresenterImpl mMediaGridPresenter;
     DisplayMetrics mScreenSize;
     private List<MediaBean> mMediaBeanList;
@@ -113,7 +113,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
     private LinearLayout mLlEmptyView;
     private RecyclerView mRvBucket;
     private BucketAdapter mBucketAdapter;
-    private RelativeLayout mRlBucektOverview;
+    private View mRlBucektOverview;
     private List<BucketBean> mBucketBeanList;
     private TextView mTvFolderName;
     private TextView mTvPreview;
@@ -251,8 +251,9 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
         mRvMedia = (RecyclerViewFinal) view.findViewById(R.id.rv_media);
         mLlEmptyView = (LinearLayout) view.findViewById(R.id.ll_empty_view);
         mRvBucket = (RecyclerView) view.findViewById(R.id.rv_bucket);
-        mRlBucektOverview = (RelativeLayout) view.findViewById(R.id.rl_bucket_overview);
+        mRlBucektOverview = view.findViewById(R.id.rl_bucket_overview);
         mRlRootView = (RelativeLayout) view.findViewById(R.id.rl_root_view);
+        view.findViewById(R.id.btn_close).setOnClickListener(this::onClick);
 
         mRvMedia.setEmptyView(mLlEmptyView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
@@ -280,6 +281,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
                 mTvPreview.setVisibility(View.VISIBLE);
             }
         }
+
 
         mMediaBeanList = new ArrayList<>();
         mScreenSize = DeviceUtils.getScreenSize(getContext());
@@ -758,6 +760,8 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
             } else {
                 showRvBucketView();
             }
+        } else if (id == R.id.btn_close) {
+            hideRvBucketView();
         }
     }
 

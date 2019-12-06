@@ -47,6 +47,14 @@
                 android:text=" 原图"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/tv_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/original_check"
+                android:text="大小:" />
+
             <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/cb_check"
                 style="@style/Widget.AppCompat.CompoundButton.CheckBox"

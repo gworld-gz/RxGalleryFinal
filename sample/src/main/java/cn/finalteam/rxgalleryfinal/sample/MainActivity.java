@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .selected(list);
         }
         rxGalleryFinal.maxSize(8)
+                .hideCamera()
                 .imageLoader(ImageLoaderType.GLIDE)
                 .subscribe(new RxBusResultDisposable<ImageMultipleResultEvent>() {
 
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
                         list = imageMultipleResultEvent.getResult();
                         listNotify(list);
-                        Toast.makeText(getBaseContext(), "已选择" + imageMultipleResultEvent.getResult().size() + "张图片", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "已选择" + imageMultipleResultEvent.getResult().size() + "张图片" + list.get(0).isOriginal(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

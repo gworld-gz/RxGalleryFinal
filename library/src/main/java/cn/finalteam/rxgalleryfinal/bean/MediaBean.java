@@ -55,6 +55,8 @@ public class MediaBean implements Parcelable {
     private String thumbnailSmallPath = "";
     //视频时间
     private long duration;
+    //是否原图
+    private boolean original;
 
     public MediaBean() {
     }
@@ -283,5 +285,13 @@ public class MediaBean implements Parcelable {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public boolean isOriginal() {
+        return original;
+    }
+
+    public void setOriginal(boolean original) {
+        this.original = original;
     }
 }

@@ -46,9 +46,6 @@ public class PreviewAdapter extends RecyclerView.Adapter<PreviewAdapter.ViewHole
         this.list = list;
         this.mConfiguration = configuration;
         this.imageLoaderType = configuration.getImageLoaderType();
-        if (list != null && list.size() > 0) {
-            setCheck(list.get(0));
-        }
     }
 
     @NonNull

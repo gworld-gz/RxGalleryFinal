@@ -67,10 +67,6 @@ public class MediaPreviewAdapter extends RecyclingPagerAdapter {
             path = mediaBean.getOriginalPath();
         }
 
-        if (isOriginal()) {
-            path = mediaBean.getOriginalPath();
-        }
-
         ivImage.setBackgroundColor(mPageColor);
         ivPlay.setVisibility(mConfiguration.isImage() ? View.GONE : View.VISIBLE);
         tvGifSize.setVisibility(mediaBean.isGif() ? View.VISIBLE : View.GONE);
@@ -122,11 +118,9 @@ public class MediaPreviewAdapter extends RecyclingPagerAdapter {
         return mMediaList.size();
     }
 
-    public boolean isOriginal() {
-        return original;
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
-    public void setOriginal(boolean original) {
-        this.original = original;
-    }
 }
