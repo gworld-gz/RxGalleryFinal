@@ -59,6 +59,9 @@ public class BucketAdapter extends RecyclerView.Adapter<BucketAdapter.BucketView
     public void onBindViewHolder(BucketViewHolder holder, int position) {
         BucketBean bucketBean = mBucketList.get(position);
         String bucketName = bucketBean.getBucketName();
+        if (TextUtils.isEmpty(bucketName)) {
+            bucketName = "未定义";
+        }
         if (position != 0) {
             SpannableString nameSpannable = new SpannableString(bucketName + "（" + bucketBean.getImageCount() + "）");
             nameSpannable.setSpan(new ForegroundColorSpan(Color.GRAY), bucketName.length(), nameSpannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
