@@ -90,8 +90,10 @@ public class MediaActivity extends BaseActivity implements ActivityFragmentView 
                     mMediaGridFragment.hideRvBucketView();
                 } else {
                     if (mCheckedList != null && mCheckedList.size() > 0) {
-                        for (MediaBean mediaBean : mCheckedList) {
-                            mediaBean.setOriginal(mMediaPreviewFragment.isOriginal());
+                        if (mMediaPreviewFragment != null) {
+                            for (MediaBean mediaBean : mCheckedList) {
+                                mediaBean.setOriginal(mMediaPreviewFragment.isOriginal());
+                            }
                         }
                         BaseResultEvent event = new ImageMultipleResultEvent(mCheckedList);
                         RxBus.getDefault().post(event);
@@ -441,6 +443,5 @@ public class MediaActivity extends BaseActivity implements ActivityFragmentView 
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-
 
 }
