@@ -306,7 +306,7 @@ public class MediaUtils {
         mediaBean.setModifiedDate(modifiedDate);
         long length = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE));
         mediaBean.setLength(length);
-        long duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+        long duration = cursor.getLong(cursor.getColumnIndex("duration"));
         mediaBean.setDuration(duration);
 
         //创建缩略图文件
