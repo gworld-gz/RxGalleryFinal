@@ -157,6 +157,7 @@ public class MediaUtils {
         projection.add(MediaStore.Images.Media.LATITUDE);
         projection.add(MediaStore.Images.Media.LONGITUDE);
         projection.add(MediaStore.Images.Media.ORIENTATION);
+        projection.add(MediaStore.Video.Media.DURATION);
         projection.add(MediaStore.Images.Media.SIZE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             projection.add(MediaStore.Images.Media.WIDTH);
