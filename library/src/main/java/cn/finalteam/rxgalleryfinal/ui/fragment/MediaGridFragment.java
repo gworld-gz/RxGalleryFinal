@@ -637,7 +637,6 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
 
     public void openCamera(Context context) {
 
-
         boolean image = mConfiguration.isImage();
 
         Intent captureIntent = image ? new Intent(MediaStore.ACTION_IMAGE_CAPTURE) : new Intent(MediaStore.ACTION_VIDEO_CAPTURE);

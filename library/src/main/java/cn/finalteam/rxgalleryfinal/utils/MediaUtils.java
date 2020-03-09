@@ -105,7 +105,7 @@ public class MediaUtils {
         projection.add(MediaStore.Video.Media.DATE_MODIFIED);
         projection.add(MediaStore.Video.Media.LATITUDE);
         projection.add(MediaStore.Video.Media.LONGITUDE);
-        projection.add(MediaStore.Video.Media.DURATION);
+        projection.add(DURATION);
         projection.add(MediaStore.Video.Media.SIZE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             projection.add(MediaStore.Video.Media.WIDTH);
@@ -140,6 +140,8 @@ public class MediaUtils {
         return mediaBeanList;
     }
 
+    private static String DURATION = TextUtils.isEmpty(MediaStore.Video.Media.DURATION) ? "duration" : MediaStore.Video.Media.DURATION;
+
     /**
      * 根据原图获取图片相关信息
      */
@@ -157,7 +159,6 @@ public class MediaUtils {
         projection.add(MediaStore.Images.Media.LATITUDE);
         projection.add(MediaStore.Images.Media.LONGITUDE);
         projection.add(MediaStore.Images.Media.ORIENTATION);
-        projection.add(MediaStore.Video.Media.DURATION);
         projection.add(MediaStore.Images.Media.SIZE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             projection.add(MediaStore.Images.Media.WIDTH);
@@ -194,6 +195,7 @@ public class MediaUtils {
         projection.add(MediaStore.Video.Media.LATITUDE);
         projection.add(MediaStore.Video.Media.LONGITUDE);
         projection.add(MediaStore.Video.Media.SIZE);
+        projection.add(DURATION);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             projection.add(MediaStore.Video.Media.WIDTH);
             projection.add(MediaStore.Video.Media.HEIGHT);
@@ -307,7 +309,13 @@ public class MediaUtils {
         mediaBean.setModifiedDate(modifiedDate);
         long length = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE));
         mediaBean.setLength(length);
-        long duration = cursor.getLong(cursor.getColumnIndex("duration"));
+        long duration;
+        try {
+            duration = cursor.getLong(cursor.getColumnIndex(DURATION));
+        } catch (Exception e) {
+            duration = 0;
+        }
+
         mediaBean.setDuration(duration);
 
         //创建缩略图文件
@@ -341,12 +349,12 @@ public class MediaUtils {
     /**
      * Call this method when you real need, it sure take many time.
      *
-     * @param context context
+     * @param context  context
      * @param sourceId target's id in the table.
-     * @param kind {@link android.provider.MediaStore.Video.Thumbnails#MICRO_KIND},
-     *             {@link android.provider.MediaStore.Video.Thumbnails#MINI_KIND},
-     *             {@link android.provider.MediaStore.Video.Thumbnails#FULL_SCREEN_KIND}
-     * @param isImage image or video
+     * @param kind     {@link android.provider.MediaStore.Video.Thumbnails#MICRO_KIND},
+     *                 {@link android.provider.MediaStore.Video.Thumbnails#MINI_KIND},
+     *                 {@link android.provider.MediaStore.Video.Thumbnails#FULL_SCREEN_KIND}
+     * @param isImage  image or video
      * @return the file path of the thumb.
      */
     public static String getThumbnail(Context context, long sourceId, int kind, boolean isImage) {
