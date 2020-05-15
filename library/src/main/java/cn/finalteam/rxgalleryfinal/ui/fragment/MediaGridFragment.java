@@ -636,9 +636,7 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
     }
 
     public void openCamera(Context context) {
-
         boolean image = mConfiguration.isImage();
-
         Intent captureIntent = image ? new Intent(MediaStore.ACTION_IMAGE_CAPTURE) : new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (captureIntent.resolveActivity(context.getPackageManager()) == null) {
             Toast.makeText(getContext(), R.string.gallery_device_camera_unable, Toast.LENGTH_SHORT).show();
@@ -655,8 +653,8 @@ public class MediaGridFragment extends BaseFragment implements MediaGridView, Re
             captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagePath));
         } else {
             ContentValues contentValues = new ContentValues(1);
-            contentValues.put(MediaStore.Images.Media.DATA, mImagePath);
-            Uri uri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            contentValues.put(image ? MediaStore.Images.Media.DATA : MediaStore.Video.Media.DATA, mImagePath);
+            Uri uri = getContext().getContentResolver().insert(image ? MediaStore.Images.Media.EXTERNAL_CONTENT_URI : MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
             captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
         // video : 1: 高质量  0 低质量
